@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes Platform</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f7f7f7;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 25px;
+            font-size: 28px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #searchBar {
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
+            display: block;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 25px 0 10px 10px;
+            color: #333;
+        }
+
+        .note-box {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>📘 Notes Platform</header>
+
+<input type="text" id="searchBar" placeholder="Search notes...">
+
+<div id="content"></div>
+
+<script>
+async function loadNotes() {
+    const response = await fetch("notes/manifest.json");
+    const data = await response.json();
+
+    const content = document.getElementById("content");
+
+    for (const category in data) {
+        const catTitle = document.createElement("div");
+        catTitle.className = "category-title";
+        catTitle.textContent = category;
+        content.appendChild(catTitle);
+
+        data[category].forEach(pdf => {
+            const box = document.createElement("div");
+            box.className = "note-box";
+            box.setAttribute("data-name", pdf.name.toLowerCase());
+            box.setAttribute("data-category", category.toLowerCase());
+
+            box.innerHTML = `
+                <h3>${pdf.name}</h3>
+                <p>Size: ${pdf.size}</p>
+                <a href="notes/${pdf.file}" class="download-btn" download>Download PDF</a>
+            `;
+
+            content.appendChild(box);
+        });
+    }
+}
+
+loadNotes();
+
+// SEARCH FUNCTION
+document.getElementById("searchBar").addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    const boxes = document.querySelectorAll(".note-box");
+
+    boxes.forEach(box => {
+        const name = box.getAttribute("data-name");
+        const category = box.getAttribute("data-category");
+
+        if (name.includes(query) || category.includes(query)) {
+            box.style.display = "block";
+        } else {
+            box.style.display = "none";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
