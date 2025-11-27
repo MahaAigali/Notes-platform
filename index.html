@@ -1,117 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
     <title>Notes Platform</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f7f7f7;
-        }
-
-        header {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            color: white;
-            padding: 25px;
-            font-size: 28px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        #searchBar {
-            width: 90%;
-            max-width: 500px;
-            margin: 20px auto;
-            display: block;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            font-size: 18px;
-        }
-
-        .category-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 25px 0 10px 10px;
-            color: #333;
-        }
-
-        .note-box {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .download-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 16px;
-            background: linear-gradient(135deg, #ff9966, #ff5e62);
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        /* minimal styling — keep your existing CSS if you want */
+        body { font-family: Arial, sans-serif; margin: 0; background:#f7f7f7; }
+        header { background: linear-gradient(135deg,#6a11cb,#2575fc); color:#fff; padding:25px; text-align:center; font-size:26px; font-weight:700;}
+        #searchBar { width:90%; max-width:600px; margin:18px auto; display:block; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:16px;}
+        .category-title { font-size:22px; font-weight:700; margin:24px 0 8px 12px; color:#333;}
+        .note-box { background:#fff; padding:14px; border-radius:12px; margin:10px; box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+        .download-btn { display:inline-block; margin-top:10px; padding:10px 14px; background:linear-gradient(135deg,#ff9966,#ff5e62); color:#fff; border-radius:8px; text-decoration:none; font-weight:700;}
+        main { max-width:1100px; margin:0 auto 60px; padding:10px;}
+        .empty { color:#777; margin-left:12px; font-style:italic;}
     </style>
 </head>
 <body>
-
 <header>📘 Notes Platform</header>
 
-<input type="text" id="searchBar" placeholder="Search notes...">
-
-<div id="content"></div>
+<main>
+  <input type="text" id="searchBar" placeholder="Search notes or categories...">
+  <div id="content"></div>
+</main>
 
 <script>
-async function loadNotes() {
-    const response = await fetch("notes/manifest.json");
-    const data = await response.json();
+/*
+  This expects a JSON file at notes/manifest.json with this shape:
+  {
+    "Chemistry": [
+      { "name": "chapter3.pdf", "file": "Chemistry/chapter3.pdf", "size": "1.97 MB" },
+      ...
+    ],
+    "Mathematics": [ ... ],
+    ...
+  }
+  The 'file' paths are relative to the notes/ folder.
+*/
 
-    const content = document.getElementById("content");
-
-    for (const category in data) {
-        const catTitle = document.createElement("div");
-        catTitle.className = "category-title";
-        catTitle.textContent = category;
-        content.appendChild(catTitle);
-
-        data[category].forEach(pdf => {
-            const box = document.createElement("div");
-            box.className = "note-box";
-            box.setAttribute("data-name", pdf.name.toLowerCase());
-            box.setAttribute("data-category", category.toLowerCase());
-
-            box.innerHTML = `
-                <h3>${pdf.name}</h3>
-                <p>Size: ${pdf.size}</p>
-                <a href="notes/${pdf.file}" class="download-btn" download>Download PDF</a>
-            `;
-
-            content.appendChild(box);
-        });
-    }
+async function fetchManifest() {
+  try {
+    const res = await fetch('notes/manifest.json', { cache: "no-store" });
+    if (!res.ok) throw new Error("manifest not found");
+    return await res.json();
+  } catch (err) {
+    console.error("Failed to load manifest:", err);
+    return null;
+  }
 }
 
-loadNotes();
+function createCard(pdf) {
+  // sanitize basename for display (if needed)
+  return `
+    <div class="note-box" data-name="${pdf.name.toLowerCase()}" data-category="${(pdf._category||'').toLowerCase()}">
+      <h3 style="margin:0 0 6px 0;">${pdf.name}</h3>
+      ${pdf.size ? `<p style="margin:0;color:#555">Size: ${pdf.size}</p>` : ''}
+      <a href="notes/${pdf.file}" class="download-btn" target="_blank" rel="noopener noreferrer" download>Download PDF</a>
+    </div>
+  `;
+}
 
-// SEARCH FUNCTION
-document.getElementById("searchBar").addEventListener("input", function () {
-    const query = this.value.toLowerCase();
-    const boxes = document.querySelectorAll(".note-box");
+function render(manifest) {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
 
-    boxes.forEach(box => {
-        const name = box.getAttribute("data-name");
-        const category = box.getAttribute("data-category");
+  if (!manifest || Object.keys(manifest).length === 0) {
+    content.innerHTML = '<p class="empty">No notes available yet.</p>';
+    return;
+  }
 
-        if (name.includes(query) || category.includes(query)) {
-            box.style.display = "block";
-        } else {
-            box.style.display = "none";
-        }
+  for (const [category, arr] of Object.entries(manifest)) {
+    const title = document.createElement('div');
+    title.className = 'category-title';
+    title.textContent = category;
+    content.appendChild(title);
+
+    if (!arr || arr.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = 'No notes yet.';
+      content.appendChild(empty);
+      continue;
+    }
+
+    arr.forEach(pdf => {
+      // attach category to pdf for searching
+      pdf._category = category;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = createCard(pdf);
+      content.appendChild(wrapper.firstElementChild);
     });
-});
+  }
+}
+
+function applySearch() {
+  const q = document.getElementById('searchBar').value.trim().toLowerCase();
+  document.querySelectorAll('.note-box').forEach(box => {
+    const name = box.getAttribute('data-name') || '';
+    const category = box.getAttribute('data-category') || '';
+    if (!q || name.includes(q) || category.includes(q)) {
+      box.style.display = '';
+    } else {
+      box.style.display = 'none';
+    }
+  });
+}
+
+(async function init(){
+  const manifest = await fetchManifest();
+  if (!manifest) {
+    document.getElementById('content').innerHTML = '<p class="empty">Failed to load notes manifest. Make sure notes/manifest.json exists.</p>';
+    return;
+  }
+  render(manifest);
+  document.getElementById('searchBar').addEventListener('input', applySearch);
+})();
 </script>
 
 </body>

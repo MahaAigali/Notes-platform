@@ -1,29 +1,18 @@
 {
-    "Biology": [],
-    "Chemistry": [
-        {
-            "name": "chapter3.pdf",
-            "file": "Chemistry/chapter3.pdf",
-            "size": "1.97 MB"
-        }
-    ],
-    "Mathematics": [
-        {
-            "name": "chapter4.pdf",
-            "file": "Mathematics/chapter4.pdf",
-            "size": "1.39 MB"
-        }
-    ],
-    "Physics": [
-        {
-            "name": "chapter1.pdf",
-            "file": "Physics/chapter1.pdf",
-            "size": "0.88 MB"
-        },
-        {
-            "name": "chapter2.pdf",
-            "file": "Physics/chapter2.pdf",
-            "size": "1.05 MB"
-        }
-    ]
+  "Biology": [],
+  "Chemistry": [
+    {
+      "name": "chapter3.pdf",
+      "file": "Chemistry/chapter3.pdf",
+      "size": "1.97 MB"
+    }
+  ],
+  "Mathematics": [
+    {
+      "name": "Polynomial_Higher_Order_Questions_Class10.pdf",
+      "file": "Mathematics/Polynomial_Higher_Order_Questions_Class10.pdf",
+      "size": "2.63 KB"
+    }
+  ],
+  "Physics": []
 }
