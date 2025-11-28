@@ -3,516 +3,235 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Notes Platform</title>
-
-<!-- =========================
-     STYLES
-========================= -->
+<title>Notes Square — Premium</title>
 <style>
-  /* RESET + BASE */
+  /* ---------- RESET & BASE ---------- */
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   :root{
-    --bg:#f7f7f7; --text:#222; --muted:#777; --card:#fff;
-    --accent1:#6a11cb; --accent2:#2575fc;
-    --glass-bg: rgba(255,255,255,0.12);
-    --glass-border: rgba(255,255,255,0.18);
-    --neon: 0 6px 24px rgba(106,17,203,0.14);
-    --card-border-grad: linear-gradient(135deg, rgba(106,17,203,0.08), rgba(37,117,252,0.08));
+    --bg:#fbfaf9; --text:#111; --muted:#7a7a7a; --card:#ffffff;
+    --accent:#b98f3b; /* gold accent */
+    --glass: rgba(255,255,255,0.6);
+    --soft-shadow: 0 12px 36px rgba(16,16,16,0.06);
   }
-  body{
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:var(--bg); color:var(--text);
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    transition: background .35s ease, color .35s ease;
-  }
+  body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg); color:var(--text);
+       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; transition:background .35s,color .35s}
   body.dark{
-    --bg:#0f0f12; --text:#e6e6e6; --muted:#9a9a9a; --card:#121212;
-    --glass-bg: rgba(255,255,255,0.03); --glass-border: rgba(255,255,255,0.06);
-    --card-border-grad: linear-gradient(135deg, rgba(106,17,203,0.06), rgba(37,117,252,0.06));
+    --bg:#0f1113; --text:#eae7e1; --muted:#9a9a9a; --card:#0d0f10;
+    --glass: rgba(255,255,255,0.03);
   }
+
   main{max-width:1100px;margin:28px auto;padding:0 18px 80px;position:relative;z-index:2}
 
-  /* HEADER + NAV */
-  header{height:88px;display:flex;align-items:center;justify-content:center;position:relative;
-    background:linear-gradient(90deg,var(--accent1),var(--accent2));background-size:300% 300%;
-    box-shadow:0 10px 28px rgba(0,0,0,0.12); border-radius:10px; margin:12px 18px; overflow:hidden;
+  /* ---------- HEADER ---------- */
+  header{
+    height:92px; display:flex; align-items:center; justify-content:center; position:relative;
+    border-radius:12px; margin:14px 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(250,248,246,0.94));
+    box-shadow: var(--soft-shadow);
+    border: 1px solid rgba(0,0,0,0.03);
+    transform: translateY(-6px); opacity:0; animation:enter .5s forwards .05s;
   }
-  .site-title{color:#fff;font-weight:800;font-size:22px;display:flex;gap:12px;align-items:center}
-  header::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
-    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0)); transform:translateX(-120%);
-    animation:sweep 6s linear infinite}
-  @keyframes sweep{0%{transform:translateX(-120%)}40%{transform:translateX(120%)}100%{transform:translateX(120%)}}
+  @keyframes enter{to{transform:translateY(0);opacity:1}}
+  .title{font-weight:800;font-size:22px;color:var(--text);display:flex;gap:12px;align-items:center}
+  .subtitle{font-size:13px;color:var(--muted)}
 
-  /* Navbar (small) */
-  .nav {display:flex;gap:10px;position:absolute;left:22px;top:12px;align-items:center}
-  .nav a{color:rgba(255,255,255,0.95);font-weight:600;text-decoration:none;padding:8px 10px;border-radius:8px;backdrop-filter:blur(4px)}
-  .nav a:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+  /* top-left micro nav */
+  .micro {position:absolute;left:18px;top:14px;display:flex;gap:10px}
+  .micro a{padding:7px 10px;border-radius:10px;text-decoration:none;color:var(--text);font-weight:600;font-size:13px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.6)); border:1px solid rgba(0,0,0,0.03)}
+  .micro a:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.06)}
 
-  /* GLASSMORPHIC DARK TOGGLE (TOP-RIGHT) */
+  /* ---------- GLASS/GOLD TOGGLE (top-right) ---------- */
   .glass-toggle{
-    position:fixed; right:18px; top:18px; z-index:9999; display:flex;align-items:center;
-    min-width:62px;padding:8px 12px;border-radius:12px;gap:10px;cursor:pointer;
-    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
-    border:1px solid var(--glass-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    backdrop-filter: blur(8px);
-    transition: transform .22s ease, box-shadow .22s ease;
+    position:fixed; right:18px; top:18px; z-index:9999; display:flex; gap:10px; align-items:center;
+    padding:10px 14px;border-radius:12px; cursor:pointer;
+    background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+    border:1px solid rgba(0,0,0,0.04); box-shadow: 0 6px 30px rgba(8,6,0,0.05);
   }
-  body.dark .glass-toggle{
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-  }
-  .glass-toggle:hover{transform:translateY(-4px)}
-  .glass-toggle .icon{
-    width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-    background: linear-gradient(135deg,var(--accent2),var(--accent1));
-    color:white;font-weight:800;box-shadow:var(--neon);
-    transform-origin:center; transition: transform .25s ease;
-  }
-  .glass-toggle .label{font-weight:700;color:var(--text);opacity:.95}
-  body.dark .glass-toggle .label{color:var(--text)}
+  .glass-toggle .icon{width:36px;height:36;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#fff0e6,#f7efe6);color:var(--accent);font-weight:800}
+  .glass-toggle .label{font-weight:700;color:var(--text)}
 
-  /* SEARCH BAR */
+  /* ---------- SEARCH ---------- */
   .search-wrap{display:flex;justify-content:center;margin-top:20px}
   #searchBar{
-    width:90%;max-width:760px;padding:12px 16px;border-radius:12px;border:1px solid rgba(0,0,0,0.08);
-    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));font-size:16px;
-    box-shadow:0 8px 30px rgba(2,6,23,0.04);outline:none;transition:transform .18s ease,box-shadow .18s ease;
+    width:88%;max-width:720px;padding:12px 16px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);
+    background:rgba(255,255,255,0.95); font-size:16px; box-shadow:0 10px 30px rgba(2,6,23,0.03)
   }
-  body.dark #searchBar{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.04);
-    color:var(--text);
-  }
-  #searchBar:focus{transform:translateY(-3px);box-shadow:0 12px 40px rgba(100,100,255,0.08)}
+  body.dark #searchBar{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04)}
 
-  /* CATEGORY TITLE (collapsible) */
-  .category {
-    margin-top:28px;
+  /* ---------- CATEGORY TITLE ---------- */
+  .category{margin-top:28px}
+  .category-title{
+    display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;font-weight:800;font-size:18px;color:var(--text)
   }
-  .category-title {
-    display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;
-    font-size:20px;font-weight:800;color:var(--text);cursor:pointer;border-radius:10px;
-    transition:background .2s ease, transform .12s ease;
-  }
-  .category-title .left{display:flex;align-items:center;gap:12px}
-  .category-title:hover{transform:translateY(-3px)}
-  .category-title .chev{font-size:18px;opacity:.85;transition:transform .22s ease}
+  .category-title:hover{transform:translateY(-3px);transition:transform .18s}
 
-  /* NOTES LIST + CARD */
+  /* ---------- CARDS ---------- */
   .notes-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:12px}
   .note-card{
-    background:var(--card);border-radius:14px;padding:16px;position:relative;
-    box-shadow:0 12px 28px rgba(2,6,23,0.06);overflow:hidden;border:1px solid transparent;
-    transition:transform .25s cubic-bezier(.15,.9,.3,1),box-shadow .25s,filter .25s,border-color .25s;
-    transform-origin:center;will-change:transform,opacity;
+    background:var(--card); padding:18px;border-radius:14px; box-shadow:0 12px 34px rgba(10,10,10,0.04);
+    border:1px solid rgba(0,0,0,0.03); transition:transform .22s,box-shadow .22s;
   }
-  body.dark .note-card{box-shadow:0 10px 30px rgba(0,0,0,0.55)}
-  .note-card:hover{transform:translateY(-8px);box-shadow:0 22px 46px rgba(2,6,23,0.18)}
-  .note-card::before{content:"";position:absolute;inset:0;border-radius:14px;padding:1px;
-    background:var(--card-border-grad);pointer-events:none;mix-blend-mode:normal;opacity:.9}
+  .note-card:hover{transform:translateY(-8px);box-shadow:0 28px 60px rgba(10,10,10,0.06)}
   .note-card .title{font-weight:800;margin-bottom:6px}
-  .note-card .meta{font-size:13px;color:var(--muted);margin-bottom:10px}
-  body.dark .note-card .meta{color:var(--muted)}
+  .note-card .meta{color:var(--muted);font-size:13px;margin-bottom:10px}
 
-  /* neon outline on hover */
-  .note-card:hover{outline:2px solid rgba(106,17,203,0.08)}
-  body.dark .note-card:hover{outline:2px solid rgba(37,117,252,0.06)}
+  /* golden button */
+  .download-btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ffd88a);
+    color:#fff;font-weight:800;text-decoration:none;box-shadow:0 8px 28px rgba(185,143,59,0.16)}
+  .download-btn:active{transform:scale(.98)}
 
-  /* download btn + ripple + check */
-  .download-btn{
-    display:inline-block;padding:9px 12px;border-radius:10px;background:linear-gradient(135deg,#ff9966,#ff5e62);
-    color:white;text-decoration:none;font-weight:800;position:relative;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,0.12);
-    transition:transform .14s ease;
-  }
-  .download-btn:active{transform:scale(.97)}
-  .download-btn .check{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;opacity:0;transition:opacity .15s}
-  .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.45);transform:translate(-50%,-50%) scale(0);pointer-events:none}
+  /* ripple & check */
+  .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);pointer-events:none}
+  .check{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;opacity:0;transition:opacity .12s}
 
-  /* SKELETON (shimmer) */
+  /* skeleton */
   .skeleton-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:12px}
-  .skel{height:110px;border-radius:12px;background:linear-gradient(90deg,#f0f0f0,#e6e6e6,#f0f0f0);background-size:200% 100%;
-    animation: shimmer 1.6s linear infinite}
+  .skel{height:110px;border-radius:12px;background:linear-gradient(90deg,#f3f1ef,#eae5df,#f3f1ef);background-size:200% 100%;animation:shimmer 1.6s linear infinite}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-  /* COLLAPSE HIDDEN */
-  .hidden{display:none !important;opacity:0;transform:translateY(-8px)}
+  /* back-to-top */
+  .back-to-top{position:fixed;right:18px;bottom:24px;padding:10px;border-radius:12px;background:var(--accent);color:white;font-weight:800;box-shadow:0 14px 40px rgba(0,0,0,0.16);display:none}
 
-  /* BACK TO TOP */
-  .back-to-top{position:fixed;right:18px;bottom:24px;padding:10px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent1));
-    color:white;font-weight:800;z-index:9999;box-shadow:0 14px 40px rgba(0,0,0,0.22);cursor:pointer;transition:transform .18s}
-  .back-to-top:hover{transform:translateY(-6px)}
-
-  /* CURSOR RING */
-  .cursor-ring{position:fixed;left:0;top:0;width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,150,255,0.95);
-    transform:translate(-50%,-50%);pointer-events:none;z-index:99999;mix-blend-mode:difference;transition:width .06s,height .06s}
-
-  /* FLOATS */
+  /* floats minimal */
   .float-wrap{position:fixed;inset:0;pointer-events:none;z-index:0}
-  .float{position:absolute;border-radius:18px;filter:blur(18px);opacity:.6;background:linear-gradient(135deg,rgba(106,17,203,0.16),rgba(37,117,252,0.16));animation:floaty 8s ease-in-out infinite}
-  .float.l1{left:6%;top:18%;width:80px;height:80px}
-  .float.l2{right:10%;top:42%;width:120px;height:120px}
-  @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}
+  .float{position:absolute;border-radius:12px;filter:blur(10px);opacity:.35;background:linear-gradient(135deg, rgba(185,143,59,0.12), rgba(255,200,120,0.08))}
+  .float.l1{left:6%;top:10%;width:90px;height:90px}
+  .float.l2{right:8%;top:48%;width:120px;height:120px;opacity:.28}
 
-  /* FOOTER */
-  footer{margin-top:42px;padding:22px;text-align:center;color:var(--muted);font-size:14px;opacity:.9}
+  footer{margin-top:42px;padding:22px;text-align:center;color:var(--muted);font-size:14px;opacity:.95}
 
-  /* RESPONSIVE */
+  /* responsive tweaks */
   @media (max-width:720px){
-    header{height:78px}
-    .nav{display:none}
-    .glass-toggle{right:12px;top:12px;padding:8px 10px}
+    header{height:80px}
+    .micro{display:none}
   }
 </style>
 </head>
 <body>
 
-  <!-- FLOATING BACKDROPS -->
+  <!-- soft floats -->
   <div class="float-wrap" aria-hidden="true">
     <div class="float l1"></div>
     <div class="float l2"></div>
   </div>
 
-  <!-- HEADER -->
   <header>
-    <div class="nav" aria-hidden="true">
+    <div class="micro">
       <a href="#" onclick="document.getElementById('searchBar').focus();return false">Search</a>
       <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">Top</a>
     </div>
-    <div class="site-title">📘 Notes Platform</div>
+    <div class="title">📘 Notes Square</div>
   </header>
 
-  <!-- GLASSMORPHIC DARK MODE TOGGLE (TOP-RIGHT) -->
-  <div class="glass-toggle" id="glassToggle" role="button" title="Toggle theme">
-    <div class="icon" id="glassIcon">🌙</div>
-    <div class="label" id="glassLabel">Dark Mode</div>
+  <div class="glass-toggle" id="themeToggle" title="Toggle theme">
+    <div class="icon" id="themeIcon">🌙</div>
+    <div class="label" id="themeLabel">Dark</div>
   </div>
 
-  <!-- CURSOR RING -->
-  <div id="cursorRing" class="cursor-ring" aria-hidden="true"></div>
-
   <main>
-    <!-- SEARCH -->
     <div class="search-wrap">
-      <input id="searchBar" placeholder="Search notes or categories..." autocomplete="off" />
+      <input id="searchBar" placeholder="Search notes or categories..." autocomplete="off">
     </div>
 
-    <!-- SKELETON (shown until manifest loads) -->
-    <div id="skeleton" class="skeleton-grid" aria-hidden="true" style="margin-top:14px"></div>
+    <div id="skeleton" class="skeleton-grid" aria-hidden="true"></div>
+    <div id="contentArea" style="margin-top:12px"></div>
 
-    <!-- CONTENT -->
-    <div id="contentArea" aria-live="polite" style="margin-top:12px"></div>
-
-    <!-- FOOTER -->
-    <footer>Made with ❤️ — Notes Platform • Auto-refresh enabled • Hosted on GitHub Pages</footer>
+    <footer>Made with ❤️ by Laxmi Aigali</footer>
   </main>
 
-  <!-- BACK TO TOP -->
-  <button id="backToTop" class="back-to-top" title="Back to top" style="display:none">↑ Top</button>
+  <button id="backToTop" class="back-to-top">↑ Top</button>
 
 <script>
-/* ============================================
-   Utility: fetch manifest.json (no-cache)
-   ============================================ */
-async function fetchManifestText(){
-  const res = await fetch('notes/manifest.json', { cache: 'no-store' });
-  if (!res.ok) throw new Error('manifest not found');
-  return await res.text();
-}
-async function fetchManifest(){
-  try{
-    const text = await fetchManifestText();
-    return JSON.parse(text);
-  }catch(e){
-    console.error(e);
-    return null;
-  }
-}
-
-/* ============================================
-   SITE STATE & HELPERS
-   ============================================ */
+/* ---------- base JS: fetch manifest, render, search, theme ---------- */
 const contentArea = document.getElementById('contentArea');
 const skeleton = document.getElementById('skeleton');
 const searchBar = document.getElementById('searchBar');
 const backToTop = document.getElementById('backToTop');
-const glassToggle = document.getElementById('glassToggle');
-const glassIcon = document.getElementById('glassIcon');
-const glassLabel = document.getElementById('glassLabel');
-const cursor = document.getElementById('cursorRing');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
 
 let lastManifestText = "";
-let currentManifest = null;
 
-/* CATEGORY ICONS (simple emoji map) */
-const categoryIcons = {
-  "Biology":"🧬",
-  "Chemistry":"⚗️",
-  "Mathematics":"🔢",
-  "Physics":"🔭"
-};
+function showSkeleton(n=6){skeleton.innerHTML=''; for(let i=0;i<n;i++){const s=document.createElement('div');s.className='skel';skeleton.appendChild(s)} skeleton.style.display=''; contentArea.style.display='none'}
+function hideSkeleton(){skeleton.style.display='none'; contentArea.style.display=''}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-/* ============================================
-   SKELETON RENDER
-   ============================================ */
-function showSkeleton(count=6){
-  skeleton.innerHTML = '';
-  for(let i=0;i<count;i++){
-    const s = document.createElement('div'); s.className='skel';
-    skeleton.appendChild(s);
-  }
-  skeleton.style.display = ''; contentArea.style.display='none';
+async function fetchManifestText(){
+  const res = await fetch('notes/manifest.json',{cache:'no-store'}); if(!res.ok) throw new Error('manifest not found'); return await res.text();
 }
-function hideSkeleton(){
-  skeleton.style.display = 'none'; contentArea.style.display='';
+async function fetchManifest(){
+  try{ const t = await fetchManifestText(); return JSON.parse(t) }catch(e){console.error(e); return null}
 }
 
-/* ============================================
-   CREATE NOTE CARD
-   ============================================ */
-function createNoteCard(pdf, idx){
-  const card = document.createElement('article');
-  card.className = 'note-card';
-  card.dataset.name = (pdf.name || '').toLowerCase();
-  card.dataset.category = (pdf._category || '').toLowerCase();
-
-  card.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div>
-        <div class="title">${escapeHtml(pdf.name)}</div>
-        <div class="meta">Size: ${escapeHtml(pdf.size || '—')}</div>
-      </div>
-      <div style="text-align:right;font-size:20px">${categoryIcons[pdf._category] || '📁'}</div>
-    </div>
-    <div style="margin-top:12px">
-      <a class="download-btn" href="notes/${encodeURI(pdf.file)}" download>Download
-        <span class="check">✓</span>
-      </a>
-    </div>
-  `;
-
-  // stagger effect
-  card.style.opacity = 0;
-  card.style.transition = `transform .55s cubic-bezier(.2,.9,.3,1) ${0.06*idx}s, opacity .55s ${0.06*idx}s`;
-  setTimeout(()=> { card.style.opacity=1 }, 30 + idx*30);
-
-  // tilt effect
-  attachTilt(card);
-
-  // download button ripple + check
-  const btn = card.querySelector('.download-btn');
-  btn.addEventListener('click', e=>{
-    const rect = btn.getBoundingClientRect();
-    const r = document.createElement('span'); r.className='ripple';
-    const x = (e.clientX - rect.left); const y = (e.clientY - rect.top);
-    r.style.left = x + 'px'; r.style.top = y + 'px'; r.style.width='20px'; r.style.height='20px';
-    btn.appendChild(r);
-    setTimeout(()=> r.remove(),600);
-    const chk = btn.querySelector('.check'); chk.style.opacity = 1;
-    setTimeout(()=> chk.style.opacity = 0,900);
-    // let default download proceed
+function makeCard(pdf, idx){
+  const card = document.createElement('article'); card.className='note-card';
+  card.dataset.name = (pdf.name||'').toLowerCase(); card.dataset.category = (pdf._category||'').toLowerCase();
+  card.innerHTML = `<div><div class="title">${escapeHtml(pdf.name)}</div><div class="meta">Size: ${escapeHtml(pdf.size||'—')}</div></div>
+  <div style="margin-top:12px"><a class="download-btn" href="notes/${encodeURI(pdf.file)}" download>Download<span class="check">✓</span></a></div>`;
+  card.style.opacity=0; card.style.transition = `transform .55s ease ${0.06*idx}s, opacity .55s ${0.06*idx}s`;
+  setTimeout(()=>card.style.opacity=1,30+idx*30);
+  // simple tilt
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const dx=e.clientX-cx, dy=e.clientY-cy; card.style.transform = `rotateX(${(dy/r.height)*-6}deg) rotateY(${(dx/r.width)*8}deg)`;
   });
-
-  // magnetic class for cursor attraction
+  card.addEventListener('mouseleave', ()=>card.style.transform='');
+  // btn ripple
+  const btn = card.querySelector('.download-btn'); btn.addEventListener('click', e=>{
+    const rect=btn.getBoundingClientRect(); const r=document.createElement('span'); r.className='ripple';
+    const x=e.clientX-rect.left, y=e.clientY-rect.top; r.style.left=x+'px'; r.style.top=y+'px'; r.style.width='20px'; r.style.height='20px';
+    btn.appendChild(r); setTimeout(()=>r.remove(),700); const ch=btn.querySelector('.check'); ch.style.opacity=1; setTimeout(()=>ch.style.opacity=0,900)
+  });
   btn.classList.add('magnetic');
-
   return card;
 }
 
-/* small HTML escape helper */
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-
-/* ============================================
-   RENDER MANIFEST (collapsible categories)
-   ============================================ */
 function renderManifest(manifest){
-  currentManifest = manifest;
-  contentArea.innerHTML = '';
-  if(!manifest || Object.keys(manifest).length===0){
-    contentArea.innerHTML = '<p style="color:var(--muted)">No notes available yet.</p>';
-    hideSkeleton();
-    return;
+  contentArea.innerHTML='';
+  if(!manifest || Object.keys(manifest).length===0){ contentArea.innerHTML='<p style="color:var(--muted)">No notes available yet.</p>'; hideSkeleton(); return; }
+  let idx=0;
+  for(const [cat,arr] of Object.entries(manifest)){
+    const sec=document.createElement('section'); sec.className='category';
+    const title=document.createElement('div'); title.className='category-title'; title.innerHTML=`<div>${cat}</div><div style="color:var(--muted)">${(arr?.length)||0} files</div>`;
+    sec.appendChild(title);
+    const list=document.createElement('div'); list.className='notes-list';
+    if(!arr || arr.length===0){ const e=document.createElement('div'); e.className='empty'; e.textContent='No notes yet.'; list.appendChild(e); }
+    else { arr.forEach(pdf=>{ pdf._category = cat; const card = makeCard(pdf, idx++); list.appendChild(card) }) }
+    sec.appendChild(list); contentArea.appendChild(sec);
   }
-
-  // iterate categories
-  let globalIdx = 0;
-  for (const [category, arr] of Object.entries(manifest)){
-    const catWrap = document.createElement('section'); catWrap.className='category';
-    const title = document.createElement('div'); title.className='category-title';
-    title.innerHTML = `<div class="left"><div style="font-size:18px">${categoryIcons[category]||'📂'}</div><div style="margin-left:8px">${category}</div></div>
-                       <div style="display:flex;gap:10px;align-items:center;">
-                         <div style="font-size:13px;color:var(--muted)">${arr?.length||0} files</div>
-                         <div class="chev">▾</div>
-                       </div>`;
-
-    // collapse state
-    let open = true;
-    const list = document.createElement('div'); list.className='notes-list';
-    if(!arr || arr.length===0){
-      const empty = document.createElement('div'); empty.className='empty'; empty.textContent='No notes yet.';
-      list.appendChild(empty);
-    } else {
-      arr.forEach(pdf=>{
-        pdf._category = category;
-        const card = createNoteCard(pdf, globalIdx++);
-        list.appendChild(card);
-      });
-    }
-
-    // collapsible toggle
-    title.addEventListener('click', ()=>{
-      open = !open;
-      list.style.display = open ? '' : 'none';
-      const chev = title.querySelector('.chev');
-      chev.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
-    });
-
-    catWrap.appendChild(title);
-    catWrap.appendChild(list);
-    contentArea.appendChild(catWrap);
-  }
-
   hideSkeleton();
 }
 
-/* ============================================
-   SEARCH
-   ============================================ */
-function applySearch(){
-  const q = (searchBar.value || '').trim().toLowerCase();
-  document.querySelectorAll('.note-card').forEach(card=>{
-    const name = card.dataset.name || '';
-    const cat = card.dataset.category || '';
-    card.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none';
-  });
-}
+function applySearch(){ const q=(searchBar.value||'').trim().toLowerCase(); document.querySelectorAll('.note-card').forEach(c=>{ const name=c.dataset.name||'', cat=c.dataset.category||''; c.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none' })}
 
-/* ============================================
-   TILT (3D) - attach per card
-   ============================================ */
-function attachTilt(card){
-  const inner = card.querySelector('.title') || card;
-  function onMove(e){
-    const rect = card.getBoundingClientRect();
-    const cx = rect.left + rect.width/2;
-    const cy = rect.top + rect.height/2;
-    const dx = e.clientX - cx; const dy = e.clientY - cy;
-    const rx = (dy / rect.height) * -6; const ry = (dx / rect.width) * 8;
-    card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
-  }
-  function onLeave(){ card.style.transform = ''; }
-  card.addEventListener('mousemove', onMove);
-  card.addEventListener('mouseleave', onLeave);
-}
-
-/* ============================================
-   CURSOR RING + MAGNETIC EFFECT
-   ============================================ */
-let mouseX=-999, mouseY=-999;
-document.addEventListener('mousemove', e=>{
-  mouseX=e.clientX; mouseY=e.clientY;
-  cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px';
-  document.querySelectorAll('.magnetic').forEach(el=>{
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
-    const dx = mouseX - cx, dy = mouseY - cy;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const max = 160;
-    if(dist < max){
-      const strength = 1 - (dist / max);
-      el.style.transform = `translate(${dx*0.06*strength}px, ${dy*0.04*strength}px) scale(${1+0.03*strength})`;
-      el.style.zIndex = 30;
-    } else {
-      el.style.transform = '';
-      el.style.zIndex = '';
-    }
-  });
-});
-document.addEventListener('mouseleave', ()=> document.querySelectorAll('.magnetic').forEach(el=> el.style.transform=''));
-
-/* ============================================
-   BACK TO TOP
-   ============================================ */
-window.addEventListener('scroll', ()=>{
-  backToTop.style.display = window.scrollY > 320 ? '' : 'none';
-});
-backToTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}) );
-
-/* ============================================
-   GLASS TOGGLE (dark mode) - animated
-   ============================================ */
-function applyStoredTheme(){
-  if(localStorage.getItem('dark') === 'true'){
-    document.body.classList.add('dark'); glassIcon.textContent='☀️'; glassLabel.textContent='Light';
-  } else {
-    document.body.classList.remove('dark'); glassIcon.textContent='🌙'; glassLabel.textContent='Dark';
-  }
-}
-glassToggle.addEventListener('click', ()=>{
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  localStorage.setItem('dark', isDark ? 'true' : 'false');
-  // animate icon
-  glassIcon.style.transform = 'scale(.85) rotate(-10deg)';
-  setTimeout(()=> glassIcon.style.transform = '', 220);
-  applyStoredTheme();
+themeToggle.addEventListener('click', ()=>{
+  document.body.classList.toggle('dark'); const isDark=document.body.classList.contains('dark'); localStorage.setItem('dark', isDark?'true':'false');
+  themeIcon.style.transform='scale(.9)'; setTimeout(()=>themeIcon.style.transform='',220);
+  themeIcon.textContent = isDark ? '☀️' : '🌙'; themeLabel.textContent = isDark ? 'Light' : 'Dark';
 });
 
-/* ============================================
-   AUTO-REFRESH: poll manifest.json every 3s
-   (safe for static hosting)
-   ============================================ */
-async function autoRefresh(){
-  try{
-    const text = await fetchManifestText();
-    if(text !== lastManifestText){
-      lastManifestText = text;
-      const manifest = JSON.parse(text);
-      renderManifest(manifest);
-      applySearch(); // keep filtering active
-    }
-  }catch(err){
-    // transient network error - ignore
-    // console.warn('autoRefresh failed', err)
-  }
-}
-let autoRefreshInterval = null;
+function applyStoredTheme(){ if(localStorage.getItem('dark')==='true'){ document.body.classList.add('dark'); themeIcon.textContent='☀️'; themeLabel.textContent='Light' } else { document.body.classList.remove('dark'); themeIcon.textContent='🌙'; themeLabel.textContent='Dark' } }
+applyStoredTheme();
 
-/* ============================================
-   INITIALIZE: show skeleton -> fetch -> render -> set polling
-   ============================================ */
+window.addEventListener('scroll', ()=> backToTop.style.display = window.scrollY>320 ? '' : 'none');
+backToTop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
 (async function init(){
-  // initial UI state
   showSkeleton(6);
-  applyStoredTheme();
-
   try{
-    const text = await fetchManifestText();
-    lastManifestText = text;
-    const manifest = JSON.parse(text);
-    renderManifest(manifest);
-    // attach search handler
-    searchBar.addEventListener('input', applySearch);
-  }catch(e){
-    console.error('failed initial fetch', e);
-    contentArea.innerHTML = '<p style="color:var(--muted)">Failed to load notes manifest.</p>';
-    hideSkeleton();
-  }
-
-  // start auto-refresh
-  if(autoRefreshInterval) clearInterval(autoRefreshInterval);
-  autoRefreshInterval = setInterval(autoRefresh, 3000);
-
-  // small header animation on enter (already styled in CSS)
-  // ensure cursor visible
-  document.body.style.visibility = 'visible';
+    const t = await fetchManifestText(); lastManifestText = t; const m=JSON.parse(t); renderManifest(m);
+  }catch(e){ console.error(e); contentArea.innerHTML='<p style="color:var(--muted)">Failed to load notes manifest.</p>'; hideSkeleton(); }
+  searchBar.addEventListener('input', applySearch);
+  setInterval(async()=>{
+    try{ const t = await fetchManifestText(); if(t !== lastManifestText){ lastManifestText = t; renderManifest(JSON.parse(t)); applySearch(); } }catch(e){}
+  },3000);
 })();
 
-/* ============================================
-   Helper: escape + safe JSON access already used
-   ============================================ */
+/* helper fetch exposed */
+async function fetchManifestText(){ const r = await fetch('notes/manifest.json',{cache:'no-store'}); if(!r.ok) throw new Error('no'); return await r.text(); }
 </script>
-
 </body>
 </html>
