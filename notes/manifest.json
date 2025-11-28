@@ -1,12 +1,40 @@
 {
-  "Biology": [],
-  "Chemistry": [
-    {
-      "name": "chapter3.pdf",
-      "file": "Chemistry/chapter3.pdf",
-      "size": "1.97 MB"
-    }
-  ],
-  "Mathematics": [],
-  "Physics": []
+    "Biology": [
+        {
+            "name": "chem 2",
+            "file": "Biology/chem 2.pdf",
+            "size": "3882 KB"
+        },
+        {
+            "name": "chem 3",
+            "file": "Biology/chem 3.pdf",
+            "size": "3681 KB"
+        }
+    ],
+    "Chemistry": [
+        {
+            "name": "chapter3",
+            "file": "Chemistry/chapter3.pdf",
+            "size": "2019 KB"
+        }
+    ],
+    "Mathematics": [
+        {
+            "name": "chem 4",
+            "file": "Mathematics/chem 4.pdf",
+            "size": "2259 KB"
+        },
+        {
+            "name": "chem 5",
+            "file": "Mathematics/chem 5.pdf",
+            "size": "2459 KB"
+        }
+    ],
+    "Physics": [
+        {
+            "name": "chem 1",
+            "file": "Physics/chem 1.pdf",
+            "size": "3639 KB"
+        }
+    ]
 }
