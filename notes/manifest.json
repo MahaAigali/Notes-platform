@@ -1,35 +1,8 @@
 {
-    "Biology": [
-        {
-            "name": "chem 2",
-            "file": "Biology/chem 2.pdf",
-            "size": "3882 KB"
-        },
-        {
-            "name": "chem 3",
-            "file": "Biology/chem 3.pdf",
-            "size": "3681 KB"
-        }
-    ],
-    "Chemistry": [
-        {
-            "name": "chapter3",
-            "file": "Chemistry/chapter3.pdf",
-            "size": "2019 KB"
-        }
-    ],
-    "Mathematics": [
-        {
-            "name": "chem 4",
-            "file": "Mathematics/chem 4.pdf",
-            "size": "2259 KB"
-        },
-        {
-            "name": "chem 5",
-            "file": "Mathematics/chem 5.pdf",
-            "size": "2459 KB"
-        }
-    ],
+    "Biology": [],
+    "Chemistry": [],
+    "Class 9 Mathematics": [],
+    "Mathematics": [],
     "Physics": [
         {
             "name": "chem 1",
